@@ -19,7 +19,7 @@ def mp_decomposition(signal, kernels, threshold, mode='bruteforce', verbose=Fals
         start_search = time.time()
         kernel_id, coeff, position = matching_function(residual, kernels, verbose=verbose)
         decomposition.append((kernel_id, coeff, position))
-        residual.add(kernels[kernel_id], -coeff, position)
+        residual.add_inplace(kernels[kernel_id], -coeff, position)
         last_coeff = coeff
         if verbose: print('Extracted component {} in:'.format((kernel_id, coeff, position)), time.time()-start)
     if verbose: print('Decomposed signal in:', time.time()-start)
