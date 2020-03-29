@@ -1,4 +1,5 @@
 import numpy as np
+from math import *
 
 class Sound():
     def __init__(self, samples):
@@ -39,3 +40,16 @@ class Sound():
             samples_cop = np.pad(samples_cop, (0,needed_len-self._len), mode='constant', constant_values=0)
         res = np.dot(samples_cop[position:position+module._len], module._samples)
         return res
+
+    def norm(self):
+        '''
+        Computes the L2 norm of the sound sample
+        '''
+        return sqrt(self.scalar_prod(self, 0))
+
+    def normalise(self):
+        '''
+        Scales the samples so that its L2 norm is 1
+        '''
+        norm = self.norm()
+        self._samples = self._samples / norm

@@ -11,27 +11,32 @@ def update_kernels(kernels_dic, decomposition, residual, learning_rate=1, verbos
         kernel = kernels_dic[kernel_idx]
         local_residual = Sound(residual._samples[position:position+kernel._len])
         kernel.add_extend(local_residual, coeff, 0)
+    for kernel_id in kernels_dic.keys():
+        kernels_dic[kernel_id].normalise()
     return
 
-def train(kernels_dic, sounds, n_epochs, learning_rate=1, threshold=0.1, verbose=False):
+def train(kernels_dic, sounds, n_epochs, learning_rate=0.1, init_threshold=1, verbose=False):
 
     n_sounds = len(sounds)
 
-    if verbose: plot_sound(kernels_dic[0])
+    if verbose: plot_sound(kernels_dic[0], title='kernel 0')
 
     epoch_scores = []
     for epoch in range(n_epochs):
+
+        threshold = init_threshold/ (epoch+1)
+
         residual_scores = []
         for i in range(n_sounds):
             sound = sounds[i%n_sounds]
-            if verbose: plot_sound(sound, 'original sound')
-            decomp, residual = mp_decomposition(sound, kernels_dic, threshold)
+            if verbose: plot_sound(sound, title='original sound')
+            decomp, residual = mp_decomposition(sound, kernels_dic, max(threshold, 0.1), verbose=verbose)
             if verbose: plot_sounds([sound, residual], ['original sound', 'residual'])
             if verbose:
                 print('decomp:',decomp)
             update_kernels(kernels_dic, decomp, residual, learning_rate, verbose)
             if verbose:
-                plot_sound(kernels_dic[0])
+                plot_sound(kernels_dic[0], title='kernel O')
             residual_scores.append(residual.scalar_prod(residual, 0))
         epoch_score = mean(residual_scores)
         print('Mean residual norm at epoch {}: {}'.format(epoch, epoch_score))

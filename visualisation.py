@@ -9,7 +9,7 @@ def plot_sound(sound, title=None):
     '''
     fig = plt.figure()
     plt.plot(range(sound._len), sound._samples)
-    if title: plt.title = title
+    if title: plt.title(title)
     plt.show()
 
 def draw_spikes(spike_list, title=None):
@@ -37,7 +37,7 @@ def plot_sounds(sounds, labels, title=None):
     for i, sound in enumerate(sounds):
         plt.plot(range(sound._len), sound._samples, label=labels[i])
     
-    if title: plt.title = title
+    if title: plt.title(title)
     plt.legend()
     plt.show()
 

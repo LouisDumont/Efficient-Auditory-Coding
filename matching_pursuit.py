@@ -15,13 +15,17 @@ def mp_decomposition(signal, kernels, threshold, mode='bruteforce', verbose=Fals
 
     start = time.time()
     while abs(last_coeff) > threshold:
-        if verbose: plot_sound(residual)
+        if verbose: plot_sound(residual, 'residual')
         start_search = time.time()
         kernel_id, coeff, position = matching_function(residual, kernels, verbose=verbose)
-        decomposition.append((kernel_id, coeff, position))
-        residual.add_inplace(kernels[kernel_id], -coeff, position)
+        if abs(coeff)>threshold:
+            decomposition.append((kernel_id, coeff, position))
+            residual.add_inplace(kernels[kernel_id], -coeff, position)
         last_coeff = coeff
         if verbose: print('Extracted component {} in:'.format((kernel_id, coeff, position)), time.time()-start)
+        if verbose:
+            residual_norm = residual.scalar_prod(residual, 0)
+            print('Residual norm after step:', residual_norm)
     if verbose: print('Decomposed signal in:', time.time()-start)
     
     return decomposition, residual
