@@ -24,8 +24,9 @@ class Gaussian_noise_generator(Kernels_generator):
     '''
     Generates Gaussian noise with predetermined statistics
     '''
-    def __init__(self, avg_length=100, mean=0, std=1):
+    def __init__(self, avg_length=100, mean=0, std=1, fixed_length=False):
         super().__init__(avg_length, mean, std)
+        self._fixed_length = fixed_length
 
     def generate_kernels(self, n_kernels):
         '''
@@ -33,7 +34,10 @@ class Gaussian_noise_generator(Kernels_generator):
         '''
         dic = {}
         for i in range(n_kernels):
-            kernel_length = max(int(random.gauss(self._avg_length, self._avg_length/4)), 1)
+            if self._fixed_length:
+                kernel_length = self._avg_length
+            else:
+                kernel_length = max(int(random.gauss(self._avg_length, self._avg_length/4)), 1)
             kernel_samples = np.random.normal(self._mean, self._std, kernel_length)
             samples_norm = np.dot(kernel_samples, kernel_samples)
             kernel_samples = kernel_samples / sqrt(samples_norm)
@@ -79,7 +83,7 @@ class Sound_generator():
         # TODO: add noise
         if length is None:
             length = max(int(random.gauss(self._avg_length, self._avg_length/4)), 1+self._avg_length//10)
-        print('Length of generated sound:', length)
+        # print('Length of generated sound:', length)
         sound = Sound(np.zeros(length))
         basis = [] # Stores the original (idx, coeff, position) tuples from which the sound was generated
         nb_kernels = max(int(random.gauss(density*length, density*length/4)), 0)
