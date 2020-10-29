@@ -1,9 +1,11 @@
-import numpy as np
 import random
 from math import *
 
+import numpy as np
+
 from sound import *
 from utils import *
+
 
 class Kernels_generator():
     '''
@@ -19,6 +21,7 @@ class Kernels_generator():
         Generates a dictionnary of kernels (as a list)
         '''
         raise NotImplementedError
+
 
 class Gaussian_noise_generator(Kernels_generator):
     '''
@@ -44,6 +47,7 @@ class Gaussian_noise_generator(Kernels_generator):
             dic[i] = Sound(kernel_samples)
         return dic
 
+
 class Gaussian_distrib_generator(Kernels_generator):
     '''
     Generates kernels that ressemble a Gaussian distribution
@@ -54,7 +58,7 @@ class Gaussian_distrib_generator(Kernels_generator):
     def generate_kernels(self, n_kernels):
         '''
         Generates a dictionnary of kernels (as a list) initialised with gaussian distribution
-        '''  
+        '''
         dic = {}
         for i in range(n_kernels):
             kernel_mean = max(random.gauss(self._mean, self._std), 1)
@@ -65,7 +69,7 @@ class Gaussian_distrib_generator(Kernels_generator):
             samples_norm = np.dot(kernel_samples, kernel_samples)
             kernel_samples = kernel_samples / sqrt(samples_norm)
             dic[i] = Sound(kernel_samples)
-        return dic     
+        return dic
 
 
 class Sound_generator():
@@ -75,23 +79,24 @@ class Sound_generator():
     def __init__(self, kernel_dic, avg_length, avg_density=0.15, noise=None):
         self._kernels = kernel_dic
         self._avg_length = avg_length
-        self._noise = noise # Noise is always assumed to be Gaussian, with std self._noise
+        self._noise = noise  # Noise is always assumed to be Gaussian, with std self._noise
         self._avg_density = avg_density
 
     def generate_sound(self, length=None, density=0.15):
         # density of kernels is estimated from the article
         # TODO: add noise
         if length is None:
-            length = max(int(random.gauss(self._avg_length, self._avg_length/4)), 1+self._avg_length//10)
-        # print('Length of generated sound:', length)
+            length = max(int(random.gauss(self._avg_length, self._avg_length/4)),
+                         1+self._avg_length//10)
         sound = Sound(np.zeros(length))
-        basis = [] # Stores the original (idx, coeff, position) tuples from which the sound was generated
+        # Stores the original (idx, coeff, position) tuples from which the sound was generated
+        basis = []
         nb_kernels = max(int(random.gauss(density*length, density*length/4)), 0)
         for i in range(nb_kernels):
-            #try:
+            # try:
             kernel_idx = random.choice(list(self._kernels.keys()))
-            position = random.randint(0,length)
-            coeff = random.gauss(0,1)
+            position = random.randint(0, length)
+            coeff = random.gauss(0, 1)
             kernel = self._kernels[kernel_idx]
             sound.add_extend(kernel, coeff, position)
             basis.append((kernel_idx, coeff, position))
@@ -108,19 +113,18 @@ class Sound_generator():
         return sound, basis
 
     def generate_sounds(self, n_sounds, avg_length=None, avg_density=None):
-        if not avg_length: avg_length = self._avg_length
-        if not avg_density: avg_density = self._avg_density
+        if not avg_length:
+            avg_length = self._avg_length
+        if not avg_density:
+            avg_density = self._avg_density
         sounds = []
         bases = []
-        lengths = np.maximum(np.random.normal(self._avg_length, self._avg_length/4, n_sounds), 1+self._avg_length//10)
-        densities = np.maximum(np.random.normal(self._avg_density, self._avg_density/4, n_sounds), 0)
+        lengths = np.maximum(np.random.normal(self._avg_length, self._avg_length/4, n_sounds),
+                             1+self._avg_length//10)
+        densities = np.maximum(np.random.normal(self._avg_density,
+                               self._avg_density/4, n_sounds), 0)
         for i in range(n_sounds):
             generation = self.generate_sound(int(lengths[i]), densities[i])
             sounds.append(generation[0])
             bases.append(generation[1])
         return sounds, bases
-
-
-
-        
-        

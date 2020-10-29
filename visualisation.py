@@ -3,25 +3,32 @@ import matplotlib.pyplot as plt
 
 from sound import *
 
+
 def plot_sound(sound, title=None, save=None):
     '''
     Plots the samples of a Sound object
     '''
     fig = plt.figure()
     plt.plot(range(sound._len), sound._samples)
-    if title: plt.title(title)
+    if title:
+        plt.title(title)
     plt.show()
+
 
 def draw_spikes(spike_list, title=None, save=None):
     fig = plt.figure()
     max_coeff = abs(max(spike_list, key=lambda x: abs(x[1]))[1])
     for i, (spike_idx, coeff, position) in enumerate(spike_list):
-        if coeff > 0: color='r'
-        else: color='b'
-        if title: plt.title = title
+        if coeff > 0:
+            color = 'r'
+        else:
+            color = 'b'
+        if title:
+            plt.title = title
         intensity = abs(coeff)/max_coeff
         plt.scatter(position, spike_idx, color=color, alpha=intensity)
     return fig
+
 
 def plot_spikes(spike_list, title=None, save=None):
     '''
@@ -30,52 +37,62 @@ def plot_spikes(spike_list, title=None, save=None):
     fig = draw_spikes(spike_list, title)
     plt.show()
 
+
 def plot_sounds(sounds, labels, title=None, save=None):
     fig = plt.figure()
-    assert len(sounds)==len(labels)
+    assert len(sounds) == len(labels)
 
     for i, sound in enumerate(sounds):
         plt.plot(range(sound._len), sound._samples, label=labels[i])
-    
-    if title: plt.title(title)
+
+    if title:
+        plt.title(title)
     plt.legend()
     plt.show()
+
 
 def compare_spikes(target, pred, save=None):
     y_max = max(max(target, key=lambda x: abs(x[0]))[0], max(pred, key=lambda x: abs(x[0]))[0])
     x_max = max(max(target, key=lambda x: abs(x[2]))[2], max(pred, key=lambda x: abs(x[2]))[2])
 
-    plt.subplot(2,1,1)
+    plt.subplot(2, 1, 1)
     axes = plt.gca()
-    axes.set_xlim([-0.5,x_max+1])
-    axes.set_ylim([-0.5,y_max+1])
+    axes.set_xlim([-0.5, x_max+1])
+    axes.set_ylim([-0.5, y_max+1])
     plt.title('True Spikes')
-    
+
     max_coeff = abs(max(target, key=lambda x: abs(x[1]))[1])
     for i, (spike_idx, coeff, position) in enumerate(target):
-        if coeff > 0: color='r'
-        else: color='b'
+        if coeff > 0:
+            color = 'r'
+        else:
+            color = 'b'
         intensity = abs(coeff)/max_coeff
         plt.scatter(position, spike_idx, color=color, alpha=intensity)
 
-    plt.subplot(2,1,2)
+    plt.subplot(2, 1, 2)
     axes = plt.gca()
-    axes.set_xlim([-0.5,x_max+1])
-    axes.set_ylim([-0.5,y_max+1])
+    axes.set_xlim([-0.5, x_max+1])
+    axes.set_ylim([-0.5, y_max+1])
     plt.title('Encoded spikes')
-    
+
     max_coeff = abs(max(pred, key=lambda x: abs(x[1]))[1])
     for i, (spike_idx, coeff, position) in enumerate(pred):
-        if coeff > 0: color='r'
-        else: color='b'
+        if coeff > 0:
+            color = 'r'
+        else:
+            color = 'b'
         intensity = abs(coeff)/max_coeff
         plt.scatter(position, spike_idx, color=color, alpha=intensity)
 
     plt.tight_layout()
+    if save:
+        plt.savefig(save)
     plt.show()
 
 
-def plot_dic_match(dic1, dic2, matches, dic_names=['first dictionary', 'second dictionary'], save=None):
+def plot_dic_match(dic1, dic2, matches, dic_names=['first dictionary', 'second dictionary'],
+                   save=None):
     '''
     Visualy compares the correspondances between two matched dictionnaries
     '''
@@ -94,4 +111,3 @@ def plot_dic_match(dic1, dic2, matches, dic_names=['first dictionary', 'second d
         plt.savefig(save)
 
     plt.show()
-
